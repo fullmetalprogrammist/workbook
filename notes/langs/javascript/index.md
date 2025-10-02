@@ -1,5 +1,6 @@
 ---
 title: "JavaScript"
+parent: "Языки"
 layout: default
 ---
 

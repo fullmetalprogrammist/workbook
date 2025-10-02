@@ -1,9 +1,8 @@
 ---
-title: "React"
-nav_exclude: true
+title: "Карта React"
+layout: default
+parent: "Методы"
 ---
-
-
 
 # Компоненты
 
