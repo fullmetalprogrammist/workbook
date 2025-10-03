@@ -2,6 +2,7 @@
 title: "Оператор ... (rest и spread)"
 parent: "Продвинутный синтаксис"
 layout: default
+nav_order: 100
 ---
 
 
