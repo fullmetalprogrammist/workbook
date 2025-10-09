@@ -1,5 +1,5 @@
 ---
-title: "Методы"
+title: "Методы массивов"
 parent: "Массивы"
 layout: default
 ---

@@ -1,7 +1,7 @@
 ---
 title: "sort()"
 layout: default
-parent: "Методы"
+parent: "Методы массивов"
 ---
 
 # sort
