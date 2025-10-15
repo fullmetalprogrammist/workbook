@@ -1,7 +1,8 @@
 ---
 title: "type vs. interface"
 layout: default
-parent: "TypeScript"
+parent: "Типы TS"
+nav_order: 500
 ---
 
 

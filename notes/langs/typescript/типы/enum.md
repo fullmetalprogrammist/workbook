@@ -1,7 +1,8 @@
 ---
 title: "enum"
 layout: default
-parent: "TypeScript"
+parent: "Типы TS"
+nav_order: 700
 ---
 
 

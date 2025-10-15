@@ -1,7 +1,8 @@
 ---
-title: "union оператор"
+title: "union"
 layout: default
-parent: "TypeScript"
+parent: "Операторы и конструкции"
+nav_order: 100
 ---
 
 

@@ -1,7 +1,8 @@
 ---
 title: "interface"
 layout: default
-parent: "TypeScript"
+parent: "Типы TS"
+nav_order: 400
 ---
 
 

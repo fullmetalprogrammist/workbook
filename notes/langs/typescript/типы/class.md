@@ -1,7 +1,8 @@
 ---
 title: "class"
 layout: default
-parent: "TypeScript"
+parent: "Типы TS"
+nav_order: 600
 ---
 
 

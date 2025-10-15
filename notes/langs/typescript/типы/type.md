@@ -1,7 +1,8 @@
 ---
 title: "type"
 layout: default
-parent: "TypeScript"
+parent: "Типы TS"
+nav_order: 300
 ---
 
 <h1>Оглавление</h1>
