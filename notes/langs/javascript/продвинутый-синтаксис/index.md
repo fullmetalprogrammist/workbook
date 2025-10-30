@@ -1,5 +1,5 @@
 ---
-title: "Продвинутный синтаксис"
+title: "Продвинутый синтаксис"
 parent: JavaScript
 layout: default
 nav_order: 100

@@ -1,6 +1,6 @@
 ---
 title: "Оператор ... (rest и spread)"
-parent: "Продвинутный синтаксис"
+parent: "Продвинутый синтаксис"
 layout: default
 nav_order: 100
 ---
