@@ -1,7 +1,7 @@
 ---
 title: "call, apply, bind"
 layout: default
-parent: "Функции"
+parent: "Функции в JS"
 ---
 
 

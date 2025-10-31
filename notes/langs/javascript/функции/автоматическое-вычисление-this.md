@@ -1,7 +1,7 @@
 ---
 title: "Автоматическое вычисление this"
 layout: default
-parent: "Функции"
+parent: "Функции в JS"
 ---
 
 
