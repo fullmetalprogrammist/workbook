@@ -11,7 +11,6 @@ parent: "Паттерны в JS"
 {:toc}
 
 
-
 # debounce
 
 - debounce
