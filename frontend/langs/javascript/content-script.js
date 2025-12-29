@@ -61,7 +61,6 @@ function scanDirectory(dirPath, depth = 0) {
     for (const item of sortedItems) {
       const itemPath = path.join(dirPath, item);
       const stat = fs.statSync(itemPath);
-	  // console.log(item);
 
       if (stat.isDirectory() && !item.startsWith('.') && !item.startsWith('img')) {
         // Добавляем директорию
@@ -75,7 +74,7 @@ function scanDirectory(dirPath, depth = 0) {
       } else if (stat.isFile() && isMarkdownFile(item) && !(item === targetFilename)) {
         // Добавляем .md файл
         const headers = extractHeadersFromMarkdown(itemPath);
-		const link = customEncode(path.relative(rootDir, itemPath));
+		const link = customUriEncode(path.relative(rootDir, itemPath));
 		console.log(link);
         structure.push({
           type: 'file',
@@ -186,7 +185,9 @@ if (require.main === module) {
 }
 
 
-
-function customEncode(path) {
+// Ссылки в гите должны быть с /, а node-функции дают \, потому надо менять.
+// На файловой системе ссылки с пробелами работают, в гите - нет. Поэтому надо пробелы менять на %20.
+// Кириллицу гит понимает нормально, можно не менять.
+function customUriEncode(path) {
   return path.replace(/ /g, '%20').replace(/\\/g, '/');
 }
