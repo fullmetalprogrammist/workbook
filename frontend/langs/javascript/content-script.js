@@ -61,6 +61,7 @@ function scanDirectory(dirPath, depth = 0) {
     for (const item of sortedItems) {
       const itemPath = path.join(dirPath, item);
       const stat = fs.statSync(itemPath);
+	  // console.log(item);
 
       if (stat.isDirectory() && !item.startsWith('.') && !item.startsWith('img')) {
         // Добавляем директорию
@@ -74,10 +75,12 @@ function scanDirectory(dirPath, depth = 0) {
       } else if (stat.isFile() && isMarkdownFile(item) && !(item === targetFilename)) {
         // Добавляем .md файл
         const headers = extractHeadersFromMarkdown(itemPath);
+		const link = customEncode(path.relative(rootDir, itemPath));
+		console.log(link);
         structure.push({
           type: 'file',
           name: item,
-		  path: encodeSpacesOnly(path.relative(rootDir, itemPath)),
+		  path: link,
           depth,
           headers: headers
         });
@@ -184,6 +187,6 @@ if (require.main === module) {
 
 
 
-function encodeSpacesOnly(path) {
-    return path.replace(/ /g, '%20');
+function customEncode(path) {
+  return path.replace(/ /g, '%20').replace(/\\/g, '/');
 }
