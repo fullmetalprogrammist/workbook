@@ -74,12 +74,10 @@ function scanDirectory(dirPath, depth = 0) {
       } else if (stat.isFile() && isMarkdownFile(item) && !(item === targetFilename)) {
         // Добавляем .md файл
         const headers = extractHeadersFromMarkdown(itemPath);
-		const link = customUriEncode(path.relative(rootDir, itemPath));
-		console.log(link);
         structure.push({
           type: 'file',
           name: item,
-		  path: link,
+		  path: itemPath,
           depth,
           headers: headers
         });
@@ -113,7 +111,9 @@ function structureToMarkdown(structure) {
         addItem(child);
       }
     } else if (item.type === 'file') {
-      markdown += `${indent} 📄 [${item.name}](${item.path})\n`;
+      const link = customUriEncode(path.relative(rootDir, item.path));
+	  const neatName = formatFileName(item.name);
+      markdown += `${indent} 📄 [${neatName}](${link})\n`;
 
       // Добавляем заголовки из .md файла как подсписки
       if (item.headers && item.headers.length > 0) {
@@ -190,4 +190,14 @@ if (require.main === module) {
 // Кириллицу гит понимает нормально, можно не менять.
 function customUriEncode(path) {
   return path.replace(/ /g, '%20').replace(/\\/g, '/');
+}
+
+function formatFileName(filename) {
+    // Убираем расширение .md
+    const withoutExt = filename.replace(/\.md$/i, '');
+    
+    // Убираем "число - " в начале
+    const withoutNumber = withoutExt.replace(/^\d+\s*-\s*/, '');
+    
+    return withoutNumber;
 }
