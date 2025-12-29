@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const targetFilename = 'toc.md';
+let rootDir;
 
 /**
  * Проверяет, является ли файл .md файлом
@@ -60,6 +61,7 @@ function scanDirectory(dirPath, depth = 0) {
     for (const item of sortedItems) {
       const itemPath = path.join(dirPath, item);
       const stat = fs.statSync(itemPath);
+	  // console.log(item);
 
       if (stat.isDirectory() && !item.startsWith('.') && !item.startsWith('img')) {
         // Добавляем директорию
@@ -71,12 +73,13 @@ function scanDirectory(dirPath, depth = 0) {
           children: scanDirectory(itemPath, depth + 1)
         });
       } else if (stat.isFile() && isMarkdownFile(item) && !(item === targetFilename)) {
+		console.log(path.relative(rootDir, itemPath));
         // Добавляем .md файл
         const headers = extractHeadersFromMarkdown(itemPath);
         structure.push({
           type: 'file',
           name: item,
-		  path: itemPath,
+		  path: path.relative(rootDir, itemPath),
           depth,
           headers: headers
         });
@@ -102,7 +105,8 @@ function structureToMarkdown(structure) {
 
     // Добавляем элемент списка
     if (item.type === 'directory') {
-      markdown += `${indent} 📁 [${item.name}](${item.path})\n`;
+      // markdown += `${indent} 📁 [${item.name}](${item.path})\n`;
+	  markdown += `${indent} 📁 ${item.name}\n`;
 
       // Рекурсивно добавляем содержимое директории
       for (const child of item.children) {
@@ -142,6 +146,8 @@ function main() {
     console.error('  node script.js <путь_к_директории>');
     process.exit(1);
   }
+  
+  rootDir = args[0];
 
   const targetDir = path.resolve(args[0]);
 
