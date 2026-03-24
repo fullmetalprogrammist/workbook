@@ -1,0 +1,72 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram name="Page-1" id="t9nKOXpJ7Czv0jLsP2Cs">
+    <mxGraphModel dx="1220" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="MegDS7uFZsHTkXGeKKa4-3" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="280" y="320" width="320" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="MegDS7uFZsHTkXGeKKa4-4" value="Entity" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" parent="1" vertex="1">
+          <mxGeometry x="305" y="374" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="MegDS7uFZsHTkXGeKKa4-5" value="Repository" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="465" y="374" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="MegDS7uFZsHTkXGeKKa4-6" value="Command" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="305" y="330" width="275" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="MegDS7uFZsHTkXGeKKa4-13" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="280" y="520" width="320" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="MegDS7uFZsHTkXGeKKa4-14" value="usecase" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="305" y="530" width="275" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="MegDS7uFZsHTkXGeKKa4-15" value="Command" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="305" y="580" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="MegDS7uFZsHTkXGeKKa4-16" value="Command" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="465" y="580" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="MegDS7uFZsHTkXGeKKa4-17" value="Entity" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" parent="1" vertex="1">
+          <mxGeometry x="280" y="200" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="MegDS7uFZsHTkXGeKKa4-18" value="Repository" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="480" y="200" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="MegDS7uFZsHTkXGeKKa4-19" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="720" y="320" width="320" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="MegDS7uFZsHTkXGeKKa4-20" value="Query" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="745" y="330" width="275" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="-aOzgh0vtzHfJiKbAfbB-3" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="920" width="760" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="-aOzgh0vtzHfJiKbAfbB-4" value="Поток программы" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="920" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="-aOzgh0vtzHfJiKbAfbB-5" value="endpoint&lt;div&gt;&quot;CreateCharacter&quot;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="980" width="120" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="-aOzgh0vtzHfJiKbAfbB-6" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="980" width="400" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="-aOzgh0vtzHfJiKbAfbB-7" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="-aOzgh0vtzHfJiKbAfbB-5" target="-aOzgh0vtzHfJiKbAfbB-6">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="560" y="930" as="sourcePoint" />
+            <mxPoint x="610" y="880" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="-aOzgh0vtzHfJiKbAfbB-8" value="CreateCharacterDTO" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="-aOzgh0vtzHfJiKbAfbB-7">
+          <mxGeometry x="-0.1018" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="-aOzgh0vtzHfJiKbAfbB-9" value="CreateCharacterUsecase" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="420" y="980" width="150" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

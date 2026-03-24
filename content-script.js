@@ -1,6 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
+const targetFilename = 'toc.md';
+let rootDir;  // Нужно, чтобы отгрызть корень от итогового пути и получить т.о. относительный путь
+
 /**
  * Проверяет, является ли файл .md файлом
  */
@@ -59,20 +62,22 @@ function scanDirectory(dirPath, depth = 0) {
       const itemPath = path.join(dirPath, item);
       const stat = fs.statSync(itemPath);
 
-      if (stat.isDirectory() && !item.startsWith('.')) {
+      if (stat.isDirectory() && !item.startsWith('.') && !item.startsWith('img')) {
         // Добавляем директорию
         structure.push({
           type: 'directory',
           name: item,
+		  path: itemPath,
           depth,
           children: scanDirectory(itemPath, depth + 1)
         });
-      } else if (stat.isFile() && isMarkdownFile(item)) {
+      } else if (stat.isFile() && isMarkdownFile(item) && !(item === targetFilename)) {
         // Добавляем .md файл
         const headers = extractHeadersFromMarkdown(itemPath);
         structure.push({
           type: 'file',
           name: item,
+		  path: itemPath,
           depth,
           headers: headers
         });
@@ -94,25 +99,28 @@ function structureToMarkdown(structure) {
 
   function addItem(item) {
     // Добавляем отступы согласно уровню вложенности
-    const indent = '  '.repeat(item.depth);
+    const indent = '#'.repeat(item.depth + 1);
 
     // Добавляем элемент списка
     if (item.type === 'directory') {
-      markdown += `${indent}- 📁 [${item.name}](${item})\n`;
+      // markdown += `${indent} 📁 [${item.name}](${item.path})\n`;
+	  markdown += `${indent} 📁 ${item.name}\n`;
 
       // Рекурсивно добавляем содержимое директории
       for (const child of item.children) {
         addItem(child);
       }
     } else if (item.type === 'file') {
-      markdown += `${indent}- 📄 ${item.name}\n`;
+      const link = customUriEncode(path.relative(rootDir, item.path));
+	  const neatName = formatFileName(item.name);
+      markdown += `${indent} 📄 [${neatName}](${link})\n`;
 
       // Добавляем заголовки из .md файла как подсписки
       if (item.headers && item.headers.length > 0) {
         for (const header of item.headers) {
           const headerIndent = '  '.repeat(item.depth + 1);
           const headerPrefix = '  '.repeat(header.level);
-          markdown += `${headerIndent}${headerPrefix}- ${header.title}\n`;
+		  markdown += `${headerPrefix}- ${header.title}\n`;
         }
       }
     }
@@ -137,6 +145,8 @@ function main() {
     console.error('  node script.js <путь_к_директории>');
     process.exit(1);
   }
+  
+  rootDir = args[0];
 
   const targetDir = path.resolve(args[0]);
 
@@ -153,17 +163,10 @@ function main() {
 
   console.log(`Сканирование директории: ${targetDir}`);
 
-  // Сканируем директорию
   const structure = scanDirectory(targetDir);
-
-  // Генерируем Markdown
   const markdownContent = structureToMarkdown(structure);
-
-  const finalContent = markdownContent;
-
-  // Сохраняем в файл
-  const outputPath = path.join(targetDir, 'content.md');
-  fs.writeFileSync(outputPath, finalContent, 'utf8');
+  const outputPath = path.join(targetDir, targetFilename);
+  fs.writeFileSync(outputPath, markdownContent, 'utf8');
 
   console.log(`Файл content.md успешно создан: ${outputPath}`);
 }
@@ -171,4 +174,21 @@ function main() {
 // Запускаем программу
 if (require.main === module) {
   main();
+}
+
+
+// Ссылки в гите должны быть с /, а node-функции дают \, потому надо менять.
+// На файловой системе ссылки с пробелами работают, в гите - нет. Поэтому надо пробелы менять на %20.
+// Кириллицу гит понимает нормально, можно не менять.
+function customUriEncode(path) {
+  return path.replace(/ /g, '%20').replace(/\\/g, '/');
+}
+
+function formatFileName(filename) {
+    // Убираем расширение .md
+    const withoutExt = filename.replace(/\.md$/i, '');
+    // Убираем "число - " в начале
+    const withoutNumber = withoutExt.replace(/^\d+\s*-\s*/, '');
+    
+    return withoutNumber;
 }

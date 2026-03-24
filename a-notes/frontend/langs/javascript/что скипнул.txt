@@ -1,0 +1,37 @@
+Скипнул эти темы, вернуться позже:
+
+* Числа
+https://learn.javascript.ru/number
+
+* Дата и время
+https://learn.javascript.ru/date
+
+* Формат JSON
+https://learn.javascript.ru/json
+
+* WeakMap и WeakSet
+  https://learn.javascript.ru/weakmap-weakset
+
+* Рекурсия и стек
+  https://learn.javascript.ru/recursion
+  Не то что скипнул, а просто прочитал и пока не понял, куда лучше поместить.
+  Там есть интересная инфа про контекст выполнения функции и как это связано
+  с рекурсией, но про контекст маловато. Возможно эту инфу можно будет прицепить
+  к какому-нибудь еще конспекту. +Вернуться сюда и попробовать самостоятельно
+  решить задачу про рекурсивный подсчет зарплат в отделах.
+  
+* Синтаксис new Function, про создание функции из текстовой строки.
+  https://learn.javascript.ru/new-function
+
+* setInterval и setTimeout
+  https://learn.javascript.ru/settimeout-setinterval
+  
+* Флаги и дескрипторы свойств
+  https://learn.javascript.ru/property-descriptors
+  О том как, например, сделать свойство только для чтения, видимым \ невидимым
+  для перечислителей и прочая магия.
+
+* Геттеры и сеттеры
+  https://learn.javascript.ru/property-accessors
+  Просто потому что это не приоритетная тема. Тут используется материал из
+  предыдущей темы, которая тоже пропущена.
