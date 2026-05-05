@@ -28,6 +28,43 @@ volumes:
   indamovie_db_vol:
 ```
 
+Более новая версия:
+
+```yaml
+name: postgres_train
+
+services:
+  pgs:
+    image: postgres
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: training_db
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+    command: >
+      postgres -c shared_preload_libraries='pg_stat_statements'
+              -c pg_stat_statements.track=all
+              -c pg_stat_statements.max=10000
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+volumes:
+  postgres_data:
+  pgadmin_data:
+```
+
 - Сразу добавил и том, чтобы данные, сохраненные в БД, не терялись при удалении контейнера
 - Порт 5432 прокинул на такой же порт компа, чтобы приложения, запущенные на компе, могли обращаться к БД
 
@@ -55,6 +92,7 @@ volumes:
   - Вкладка `General`
     - `Name` - любое, просто косметическое имя, которое будет в интерфейсе
   - Вкладка `Connection`
+    - PPS. Вероятно, дефолтных пользователя и БД все же менять можно, так что все настройки для соединения надо брать как в yaml задавали
     - `Host name / address` - имя сервиса из docker-compose (в данном случае **pgs**, см. конфиг выше)
       - поскольку и СУБД, и pgAdmin находятся внутри сети докера, нам не нужны IP-адреса сервисов, ими управляет докер, а мы можем для ссылки на сервис использовать просто его имя
     - `Port` - **5432**, т.к. это дефолт настроек официального образа и менять его а) сложно б) не нужно и не рекомендуется

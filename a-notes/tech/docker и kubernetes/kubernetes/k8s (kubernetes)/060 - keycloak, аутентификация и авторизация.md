@@ -73,13 +73,66 @@
 
 # Черновая настройка
 
-- выполнить
+- установка пакетов
+
+```
+PS C:\WINDOWS\system32> helm repo add codecentric https://codecentric.github.io/helm-charts
+"codecentric" has been added to your repositories
+PS C:\WINDOWS\system32> helm install my-keycloak codecentric/keycloakx
+NAME: my-keycloak
+LAST DEPLOYED: Mon Apr 20 13:26:14 2026
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+TEST SUITE: None
+NOTES:
+***********************************************************************
+*                                                                     *
+*                Keycloak.X Helm Chart by codecentric AG              *
+*                                                                     *
+***********************************************************************
+
+Keycloak was installed with a Service of type ClusterIP
+
+Create a port-forwarding with the following commands:
+
+export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=keycloakx,app.kubernetes.io/instance=my-keycloak" -o name)
+echo "Visit http://127.0.0.1:8080 to use your application"
+kubectl --namespace default port-forward "$POD_NAME" 8080
+```
+
+- ~~выполнить~~
+  - P.S. это не надо, если установил конг. Это делает ingress controller, основанный на nginx
 
 ```
 minikube addons enable ingress
 ```
 
+- манифест для конга
+  - идея - запросы без токена трактуем как анонимов и пусть бизнес-сервис сам решает, обрабатывать или отклонять
+
+```yaml
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: block-anonymous
+plugin: request-termination
+config:
+  status_code: 401
+  message: "Неаутентифицированные идут на хой"
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+  name: anonymous  # Имя Consumer'а в K8s
+username: anonymous  # Логин Consumer'а в Kong (тот самый "аноним")
+```
+
+
+
 - манифест со всем необходимым
+  - много возни было, в итоге вот этот варик заработал, потом разобраться что к чему, проблемы были в StatefulSet keycloak, а в этом варианте надо подождать пока раздуплится, сначала может быть красное
 
 ```yaml
 apiVersion: v1
@@ -103,26 +156,6 @@ spec:
   resources:
     requests:
       storage: 1Gi
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: keycloak
-  annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-spec:
-  rules:
-  - host: keycloak.127.0.0.1.nip.io
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: keycloak
-            port:
-              number: 8080
 ---
 apiVersion: v1
 kind: Service
@@ -153,6 +186,8 @@ spec:
   type: ClusterIP
 ---
 apiVersion: apps/v1
+# Use a stateful setup to ensure that for a rolling update Pods are restarted with a rolling strategy one-by-one.
+# This prevents losing in-memory information stored redundantly in two Pods.
 kind: StatefulSet
 metadata:
   name: keycloak
@@ -160,6 +195,7 @@ metadata:
     app: keycloak
 spec:
   serviceName: keycloak-discovery
+  # Run with one replica to save resources, or with two replicas to allow for rolling updates for configuration changes
   replicas: 2
   selector:
     matchLabels:
@@ -171,27 +207,37 @@ spec:
     spec:
       containers:
         - name: keycloak
-          image: quay.io/keycloak/keycloak:26.6.0
+          image: quay.io/keycloak/keycloak:26.6.1
           args: ["start"]
           env:
             - name: KC_BOOTSTRAP_ADMIN_USERNAME
               value: "admin"
             - name: KC_BOOTSTRAP_ADMIN_PASSWORD
               value: "admin"
+            # In a production environment, add a TLS certificate to Keycloak to either end-to-end encrypt the traffic between
+            # the client or Keycloak, or to encrypt the traffic between your proxy and Keycloak.
+            # Respect the proxy headers forwarded by the reverse proxy
+            # In a production environment, verify which proxy type you are using, and restrict access to Keycloak
+            # from other sources than your proxy if you continue to use proxy headers.
             - name: KC_PROXY_HEADERS
               value: "xforwarded"
             - name: KC_HTTP_ENABLED
               value: "true"
+            # In this explorative setup, no strict hostname is set.
+            # For production environments, set a hostname for a secure setup.
             - name: KC_HOSTNAME_STRICT
               value: "false"
             - name: KC_HEALTH_ENABLED
               value: "true"
             - name: 'KC_CACHE'
               value: 'ispn'
+            # Passing the Pod's IP primary address to the JGroups clustering as this is required in IPv6 only setups
             - name: POD_IP
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+            # Instruct JGroups which DNS hostname to use to discover other Keycloak nodes
+            # Needs to be unique for each Keycloak cluster
             - name: KC_CACHE_EMBEDDED_NETWORK_BIND_ADDRESS
               value: '$(POD_IP)'
             - name: 'KC_DB_URL_DATABASE'
@@ -200,6 +246,7 @@ spec:
               value: 'postgres'
             - name: 'KC_DB'
               value: 'postgres'
+            # In a production environment, use a secret to store username and password to the database
             - name: 'KC_DB_PASSWORD'
               value: 'keycloak'
             - name: 'KC_DB_USERNAME'
@@ -211,9 +258,6 @@ spec:
               containerPort: 7800
             - name: jgroups-fd
               containerPort: 57800
-          volumeMounts:
-            - name: keycloak-data
-              mountPath: /opt/keycloak/data
           startupProbe:
             httpGet:
               path: /health/started
@@ -239,14 +283,6 @@ spec:
             requests:
               cpu: 500m
               memory: 1700Mi
-  volumeClaimTemplates:
-    - metadata:
-        name: keycloak-data
-      spec:
-        accessModes: [ "ReadWriteOnce" ]
-        resources:
-          requests:
-            storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -329,3 +365,8 @@ kubectl port-forward svc/keycloak 8080:8080
 - public client и confidential client
 - секрет для конфед-клиента - искать в админке на странице клиента на вкладке Credentials
 - когда настраиваешь роли для клиента, надо обращать внимание, что там много ролей и поэтому они разбиты на несколько страниц, и на одной странице видно не все. Поэтому если какой-то роли не видно, надо листать страницы и искать.
+
+
+
+- для конга клиент делаем confindential
+  - ставим опции Client Authentication и Service account roles

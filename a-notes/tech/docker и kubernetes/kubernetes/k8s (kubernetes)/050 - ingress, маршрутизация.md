@@ -72,7 +72,11 @@ helm install kong kong/kong --set ingressController.enabled=true
   - туннелирование нужно, чтобы трафик, отправленный на localhost, перенаправлялся в сеть миникуба
     - там его поймает load balancer и отправит на kong
 
+## Дополнительно
 
+- после установки конга появляется сервис kong-kong-proxy в статусе pending
+  - у него тип LoadBalancer
+- когда мы запускаем `minikube tunnel`, он сам находит сервис типа LoadBalancer и шлет трафик, отправленный на localhost, на этот сервис. А он уже отправляет этот запрос на конкретный объект ingress controller'а. Это такой паттерн кубера, на случай когда у контроллера несколько реплик, но все так же и когда она одна всего.
 
 
 
@@ -97,5 +101,42 @@ spec:
             name: user-svc
             port:
               number: 8080
+```
+
+
+
+
+
+
+
+
+
+# Дополнительно
+
+- После установки вот такое выдало в консоль, мб тут есть что-то полезное
+
+```
+PS C:\WINDOWS\system32> helm install kong kong/kong --set ingressController.enabled=true
+NAME: kong
+LAST DEPLOYED: Mon Apr 20 11:48:09 2026
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+TEST SUITE: None
+NOTES:
+To connect to Kong, please execute the following commands:
+
+HOST=$(kubectl get svc --namespace default kong-kong-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+PORT=$(kubectl get svc --namespace default kong-kong-proxy -o jsonpath='{.spec.ports[0].port}')
+export PROXY_IP=${HOST}:${PORT}
+curl $PROXY_IP
+
+Once installed, please follow along the getting started guide to start using
+Kong: https://docs.konghq.com/kubernetes-ingress-controller/latest/guides/getting-started/
+
+WARNING: Kong Manager will not be functional because the Admin API is not
+enabled. Setting both .admin.enabled and .admin.http.enabled and/or
+.admin.tls.enabled to true to enable the Admin API over HTTP/TLS.
 ```
 
