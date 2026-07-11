@@ -3,7 +3,7 @@
 - Логичнее запускать через docker-compose разом и СУБД, и pgAdmin
   - Так они будут в одной сети и будут видеть друг друга
   - Не придется ставить десктоп-версию pgAdmin
-- docker-compose.yaml:
+- `docker-compose.yaml`:
 
 ```yaml
 name: postgres_train

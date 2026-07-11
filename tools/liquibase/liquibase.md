@@ -1,0 +1,247 @@
+# Liquibase
+
+## Что такое
+
+- Liquibase - это инструмент для миграции схемы БД
+  - Миграция БД - это контролируемое и версионируемое изменение схемы БД
+    - Например, добавление \ изменение колонок и т.д. оформляется в виде отдельной миграции, которая имеет версию. Это позволяет откатываться \ накатывать изменения по git-принципу
+- Мы описываем в файле миграции схему БД в liquibase-специфичном формате, а она уже переводит это описание в реальные DDL-команды конкретной СУБД
+  - Можно использовать yaml, json, и даже обычный SQL для формирования файла с миграциями
+
+
+
+## Примеры файлов миграций
+
+### yaml
+
+```yaml
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: your.name
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: SERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 2
+      author: your.name
+      changes:
+        - createTable:
+            tableName: favorites
+            columns:
+              - column:
+                  name: id
+                  type: SERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: favorites
+            constraintName: unique_user_product
+            columnNames: user_id, product_id
+  - changeSet:
+      id: 3
+      author: your.name
+      changes:
+        - createIndex:
+            tableName: favorites
+            indexName: idx_favorites_user_id
+            columns:
+              - column:
+                  name: user_id
+```
+
+### sql
+
+```sql
+-- liquibase formatted sql
+
+--changeset your.name:1
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    phone VARCHAR(50) NOT NULL
+);
+--rollback DROP TABLE users;
+
+--changeset your.name:2
+CREATE TABLE favorites (
+    id SERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    product_id BIGINT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, product_id)
+);
+--rollback DROP TABLE favorites;
+
+--changeset your.name:3
+CREATE INDEX idx_favorites_user_id ON favorites(user_id);
+--rollback DROP INDEX idx_favorites_user_id;
+```
+
+
+
+
+
+# Базовая настройка для spring boot
+
+- Версия spring boot > 4
+- Зависимости
+
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-liquibase</artifactId>
+</dependency>
+```
+
+- `application.yaml`
+
+```yaml
+spring:
+  application:
+    name: user
+  datasource:
+    url: jdbc:postgresql://localhost:5433/usersdb
+    username: admin
+    password: admin123
+  jpa:
+    hibernate:
+      ddl-auto: none  # <--
+    show-sql: true
+  liquibase:  # <--
+    enabled: true
+    default-schema: public
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+```
+
+- Файлы с миграциями
+  - В папке `resources` создаем папки `db/changelog/changeset`
+  - В changelog кладем `db.changelog-master.yaml`
+    - Можно писать миграции прямо в него, а можно просто перечислять отдельные файлы с миграциями:
+
+```yaml
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/create-tables.sql
+  - include:
+      file: db/changelog/changeset/следующий-файл-и-т.д.
+```
+
+- Файлы с непосредственно миграциями кладем в папку `chageset`
+  - Например, sql-файл с liquibase'овскими служебными комментариями
+    - `create-tables.sql`
+
+```sql
+-- liquibase formatted sql
+
+--changeset your.name:1
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    phone VARCHAR(50) NOT NULL
+);
+--rollback DROP TABLE users;
+
+--changeset your.name:2
+CREATE TABLE favorites (
+    id SERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    product_id BIGINT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, product_id)
+);
+--rollback DROP TABLE favorites;
+
+--changeset your.name:3
+CREATE INDEX idx_favorites_user_id ON favorites(user_id);
+--rollback DROP INDEX idx_favorites_user_id;
+```
+
+- Теперь при запуске приложения будет запускаться liquibase и приводить БД в состояние, соответствующее миграциям
+
+## Проблемы
+
+- Из-за версии спринга Liquibase не стартовал
+  - Оказалось надо подключить зависимость не `liquibase-core`, а `spring-boot-starter-liquibase`
+
+
+
+
+
+# Синтаксис описания миграций
+
+## SQL
+
+
+
+### Оформление откатов
+
+- Три варианта
+  - Код отката короткий, помещается в одну строку
+  - Код отката средний, хочется разбить на несколько строк
+  - Кот отката большой, хочется поместить в отдельный файл
+- Короткий
+  - Пишем `--rollback тут-код-отката`
+
+```
+--rollback DROP TABLE product_status;
+```
+
+- Средний
+  - Используем блок rollback
+
+```
+/* liquibase rollback
+ALTER TABLE products
+DROP COLUMN status_id;
+*/
+```
+
+- Большой
+  - TODO подключаем файл
+
+
+
+
+
+# Черновик
+
+- Два подхода
+  - Миграционный
+  - На основе состояния
+- Как использование liquibase влияет на СУБД-специфичные вещи? Типы например и т.д.
+  - А также триггеры, индексы, хранимые процедуры и функции
